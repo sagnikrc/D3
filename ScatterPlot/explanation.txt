@@ -1,0 +1,4 @@
+BudgetVsRating combination is better than the Wins+NominationsVsRating. A bad movie will always have low Wins+Nominations. Using the first plot, we can clearly visualize high budget movies which received a poor rating. This is more interesting to the user.
+
+LogScale - To visually reduce large variance in data & display within a fixed range.
+SquareRootScale - Where the growth is sub-linear & more of the inputs lie in latter part of the output. 

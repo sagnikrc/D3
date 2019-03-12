@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Poverty</title>
+
+  <style type="text/css" src="choropleth.css"></style>
+  
+  <script src="../lib/d3.v5.min.js"></script>
+  <script src="../lib/topojson.v2.min.js"></script>
+  <!--<script src="https://d3js.org/topojson.v2.min.js"></script> -->
+  <!-- <script src="js/topojson.v2.min.js"></script> -->
+  <!--<script src="js/d3-tip.min.js"></script> -->
+  <script src="../lib/d3-tip.min.js"></script> 
+</head>
+<body>
+  <div style="margin-left: 200px">
+    <h2> Choropleth Map of County Data</h2>
+  </div>
+  <svg width="1200" height="600"></svg>
+
+  <script>
+
+  var svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height");
+
+  var poverty = d3.map();
+  var state = d3.map();
+  var county = d3.map();
+  var totalpop = d3.map();
+  var incomepercap = d3.map();
+  var path = d3.geoPath();
+
+  var x = d3.scaleLinear()
+      .domain([1, 10])
+      .rangeRound([600, 860]);
+
+  var color = d3.scaleThreshold()
+      .domain(d3.range(2, 10))
+      .range(d3.schemeGreens[9]);
+
+  var g = svg.append("g")
+      .attr("class", "key")
+      .attr("transform", "translate(400,40)");
+  g.selectAll("rect")
+    .data(color.range().map(function(d) {
+        d = color.invertExtent(d);
+        if (d[0] == null) d[0] = x.domain()[0];
+        if (d[1] == null) d[1] = x.domain()[1];
+        return d;
+      }))
+    .enter().append("rect")
+      .attr("height", 20)
+      .attr("y", function(d) { return x(d[0])-580; })
+      .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+      .attr("fill", function(d) { return color(d[0]); })
+      .attr("transform", "translate(600,0)");
+  g.append("text")
+      .attr("class", "caption")
+      .attr("x", x.range()[0]-60
+        )
+      .attr("y", -6)
+      .attr("fill", "#000")
+      .attr("font-size", "16")
+      .attr("text-anchor", "start")
+      .attr("font-weight", "bold")
+      .text("Poverty rate");
+
+  var promises = [
+    d3.json("us.json"),
+    d3.csv("county_poverty.csv", function(d) {
+      poverty.set(d.CensusId,+d.Poverty);
+      state.set(d.CensusId,d.State);
+      county.set(d.CensusId,d.County);
+    }),
+    d3.csv("county_detail.csv", function(d) {
+      totalpop.set(d.CensusId,+d.TotalPop);
+      incomepercap.set(d.CensusId,+d.IncomePerCap);
+    })
+  ]
+  Promise.all(promises).then(ready)
+
+  function ready([us]) {
+    var tooltip = d3.tip()
+      .attr('class','d3-tip')
+      .style("opacity",0.2)
+      .html(
+        function(d){
+            tool =  "State:" + d.State + "<br>" + "County:" + d.County + "<br>" + "Poverty Rate:" + d.Poverty + "%<br>" + "Total Population:" + d.TotalPop + "<br>" + "Income per Capita:" + d.IncomePerCap;
+            return tool;
+          }
+        );
+    g.call(tooltip);
+
+    svg.append("g")
+      .attr("class", "counties")
+      .selectAll("path")
+      .data(topojson.feature(us, us.objects.counties).features , function(d){
+        d.State = state.get(d.id);
+        d.County = county.get(d.id);
+        d.Poverty = poverty.get(d.id);
+        d.TotalPop = totalpop.get(d.id);
+        d.IncomePerCap = incomepercap.get(d.id);
+      })
+      .enter().append("path")
+      .attr("fill", function(d,i) {
+        var level_color = color(d.Poverty);
+        return color(d.Poverty); 
+      })
+      .attr("d", path)
+      .on('mouseover',tooltip.show)
+      .on('mouseout',tooltip.hide);
+
+      var legend = g.selectAll("legend")
+        .data([2,4,6,8,10,12,14,16,18])
+        .enter();
+
+      legend.append('text')
+        .attr("class", "legend")
+        .attr("x", 640)
+        .attr("y", function(d, i){ return i*30 + 30})
+        .text(function(d){
+          if (d == 2)
+            return '≤' + d +'%';
+          else if (d == 18)
+            return '≥' + d + '%';
+          else 
+            return d + '%';
+        })
+  }
+  </script>
+</body>

@@ -1,0 +1,668 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="../lib/d3.v5.min.js"></script>
+<html>
+
+<head>
+	<title> schowdhury65 </title>
+<style>
+.pagebreak { page-break-before: always; } /* page-break-after works, as well */
+</style> 
+</head>
+<body>
+
+	<script type="text/javascript">
+
+var myRatingData = [],
+	myWinsNomsData = [],
+	myIsGoodRatingData = [],
+  myBudgetData = [],
+  myVotesData = [];
+
+
+
+
+d3.csv("movies.csv").then(function( data) {
+	for(var i = 0; i<862; i++){
+   myRatingData[i] = +data[i]['Rating'];
+   myWinsNomsData[i] = +data[i]["WinsNoms"];
+   myIsGoodRatingData[i] = +data[i]["IsGoodRating"];
+   myBudgetData[i] = +data[i]["Budget"];
+   myVotesData[i] = +data[i]["Votes"];
+   console.log("myRatingData["+i+"] = " +myRatingData[i]+" | myWinsNomsData["+i+"] = "+myWinsNomsData[i]+" | myIsGoodRatingData["+i+"] = "+myIsGoodRatingData[i]+" | myBudgetData["+i+"] = "+myBudgetData[i]+" | myVotesData["+i+"]= "+myVotesData[i]);
+}
+
+
+
+
+// size and margins for the chart
+var margin = {top: 20, right: 15, bottom: 60, left: 70}
+  , width = 960 - margin.left - margin.right
+  , height = 500 - margin.top - margin.bottom;
+
+
+
+// the scales translate data values to pixel values for you
+var x = d3.scaleLinear()
+          .domain([2.0, d3.max(myRatingData)])  // the range of the values to plot
+          .range([ 0, width ])
+          ;        // the pixel range of the x-axis
+
+var y = d3.scaleLinear()
+          .domain([0, d3.max(myWinsNomsData)])
+          .range([ height, 0 ]);
+
+var y2 =d3.scaleLinear()
+          .domain([200000, d3.max(myBudgetData)])
+          .range([ height, 0 ]); 
+
+var y3 =d3.scaleLinear()
+          .domain([0, d3.max(myVotesData)])
+          .range([ height, 0 ]); 
+
+var y4 =d3.scaleSqrt()
+          .domain([d3.min(myWinsNomsData), d3.max(myWinsNomsData)])
+          .range([ height, 0 ]); 
+
+var y5 =d3.scaleLog()
+          .domain([20,d3.max(myWinsNomsData)])
+          .range([height, 20]);
+
+/*console.log(y5(20));
+console.log(y5(d3.max(myWinsNomsData)));*/
+// the chart object, includes all margins
+var chart = d3.select('body')
+              .append('svg:svg')
+              .attr('width', width*2 + margin.right + margin.left)
+              .attr('height', (height*6 +200) + margin.top + margin.bottom)
+              .attr('class', 'chart')
+              ;
+
+// the main object where the chart and axis will be drawn
+var main = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')  
+                ;
+
+var main2 = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + (height+margin.top+margin.bottom)+ ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')  
+                ;
+
+var main3 = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + ((height*2)+(margin.top *2)+(margin.bottom*2))+ ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')  
+                ;
+var main4 = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + ((height*3)+(margin.top *3)+(margin.bottom*3))+ ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')  
+                ;
+
+var main5 = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + ((height*4)+(margin.top *4)+(margin.bottom*4))+ ')')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'main')  
+                ;
+
+// draw the x axis
+var xAxis = d3.axisBottom(x);
+// draw the y axis
+var yAxis = d3.axisLeft(y);
+var yAxis2 = d3.axisLeft(y2);
+var yAxis3 = d3.axisLeft(y3);
+var yAxis4 = d3.axisLeft(y4);
+var yAxis5 = d3.axisLeft(y5);
+
+main.append('g')
+    .attr('transform', 'translate(0,' + height + ')')
+    .attr('class', 'main axis rating')
+    .call(xAxis);
+
+main2.append('g')
+.attr('transform', 'translate(0,' + (height) + ')')
+.attr('class', 'main axis rating')
+.call(xAxis);
+
+main3.append('g')
+.attr('transform', 'translate(0,' + (height) + ')')
+.attr('class', 'main axis rating')
+.call(xAxis);
+
+
+main4.append('g')
+.attr('transform', 'translate(0,' + (height) + ')')
+.attr('class', 'main axis rating')
+.call(xAxis);
+
+main5.append('g')
+.attr('transform', 'translate(0,' + (height) + ')')
+.attr('class', 'main axis rating')
+.call(xAxis);
+
+main.append('g')
+.attr('transform', 'translate(0,0)')
+.attr('class', 'main axis wins')
+.call(yAxis);
+
+main2.append('g')
+.attr('transform', 'translate(0,0)')
+.attr('class', 'main axis budget')
+.call(yAxis2);
+
+main3.append('g')
+.attr('transform', 'translate(0,0)')
+.attr('class', 'main axis budget')
+.call(yAxis3);
+
+main4.append('g')
+.attr('transform', 'translate(0,0)')
+.attr('class', 'main axis budget')
+.call(yAxis4);
+
+main5.append('g')
+.attr('transform', 'translate(0,0)')
+.attr('class', 'main axis budget')
+.call(yAxis5);
+
+// draw the graph object
+var g =  main.append("svg:g"); 
+var g2 = main2.append("svg:g"); 
+var g3 = main3.append("svg:g"); 
+var g4 = main4.append("svg:g"); 
+var g5 = main5.append("svg:g"); 
+
+
+var rscale3 = d3.scaleLinear()
+               .domain([d3.min(myWinsNomsData),d3.max(myWinsNomsData)])
+               .range([3,5]);
+
+
+g.selectAll("circle" ) 
+  .data(myWinsNomsData)  // using the values in the myWinsNomsData array
+  .enter().append("svg:circle")  // create a new circle for each value
+      .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
+      .attr("cx", function (d,i) { return x(myRatingData[i]); } ) // translate x value
+      .attr("r", 4) // radius of circle
+      .style("opacity", 1.0) // opacity of circle
+      .style("stroke", function(d,i){
+          if( myIsGoodRatingData[i] == 1 ){
+            return null
+          } else { 
+            return "red" }
+        })                    // colour the stroke
+      .style("stroke-width", 1)
+      .style("fill", "none") 
+      ;
+
+
+g2.selectAll("circle" ) 
+  .data(myBudgetData)  // using the values in the myWinsNomsData array
+  .enter().append("svg:circle")  // create a new circle for each value
+      .attr("cy", function (d) { return y2(d); } ) // translate y value to a pixel
+      .attr("cx", function (d,i) { return x(myRatingData[i]); } ) // translate x value
+      .attr("r", 4) // radius of circle
+      .style("opacity", 1.0) // opacity of circle
+      .style("stroke", function(d,i){
+          if( myIsGoodRatingData[i] == 1 ){
+            return "blue"
+          } else { 
+            return "red" }
+        })                    
+      .style("stroke-width", 1)
+      .style("fill", "none") 
+      ;
+
+g3.selectAll("circle" ) 
+  .data(myVotesData)  // using the values in the myWinsNomsData array
+  .enter().append("svg:circle")  // create a new circle for each value
+      .attr("cy", function (d) { return y3(d); } ) // translate y value to a pixel
+      .attr("cx", function (d,i) { return x(myRatingData[i]); } ) // translate x value
+      .attr("r", function(d){ return rscale3(d)/175;}) // radius of circle
+      .style("opacity", 1.0) // opacity of circle
+      .style("stroke", function(d,i){
+          if( myIsGoodRatingData[i] == 1 ){
+            return "blue"
+          } else { 
+            return "red" }
+        })                    
+      .style("stroke-width", 1)
+      .style("fill", "none") 
+      ;
+
+g4.selectAll("circle" ) 
+  .data(myWinsNomsData)  // using the values in the myWinsNomsData array
+  .enter().append("svg:circle")  // create a new circle for each value
+      .attr("cy", function (d) { return y4(d); } ) // translate y value to a pixel
+      .attr("cx", function (d,i) { return x(myRatingData[i]); } ) // translate x value
+      .attr("r", 4) // radius of circle
+      .style("opacity", 1.0) // opacity of circle
+      .style("stroke", function(d,i){
+          if( myIsGoodRatingData[i] == 1 ){
+            return null
+          } else { 
+            return "red" }
+        })                    // colour the stroke
+      .style("stroke-width", 1)
+      .style("fill", "none") 
+      ;
+
+g5.selectAll("circle" ) 
+  .data(myWinsNomsData)  // using the values in the myWinsNomsData array
+  .enter().append("svg:circle")  // create a new circle for each value
+      .attr("cy", function (d) { 
+            if(y5(d) >= 420){
+              return 420;
+            }
+            else{
+              return y5(d);
+            }
+            })
+      .attr("cx", function (d,i) { return x(myRatingData[i]); } ) // translate x value
+      .attr("r", 4) // radius of circle
+      .style("opacity", 1.0) 
+      .style("stroke", function(d,i){
+          if( myIsGoodRatingData[i] == 1 ){
+            return null
+          } else { 
+            return "red" }
+        })                   
+      .style("stroke-width", 1)
+      .style("fill", "none") 
+      ;
+
+
+g.selectAll("path")
+  .data(myWinsNomsData)
+  .enter().append("path")
+  .attr("class", "point")
+  .attr("d", d3.symbol().type(d3.symbolCross).size(30/*function(d){
+                    return rscale(d);
+                  }*/))
+  .attr("transform", function(d,i) { return "translate("+x(myRatingData[i]) +  "," + y(myWinsNomsData[i])+")" ; })
+  .style("fill", "none")
+  .style("stroke", "blue")
+  .style("stroke-width", "1.0px") 
+  ;
+
+g2.selectAll("path")
+  .data(myBudgetData)
+  .enter().append("path")
+  .attr("class", "point")
+  .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+  .attr("transform", function(d,i) { return "translate("+x(myRatingData[i]) +  "," + y(myWinsNomsData[i])+")" ; })
+  .style("fill", "none")
+  .style("stroke", "blue")
+  .style("stroke-width", "1.0px") 
+  ;
+
+g3.selectAll("path")
+  .data(myVotesData)
+  .enter().append("path")
+  .attr("class", "point")
+  .attr("d", d3.symbol().type(d3.symbolCross).size(function(d){ return rscale3(d)/30;}))
+  .attr("transform", function(d,i) { return "translate("+x(myRatingData[i]) +  "," + y(myWinsNomsData[i])+")" ; })
+  .style("fill", "none")
+  .style("stroke", "blue")
+  .style("stroke-width", "1.0px") 
+  ;
+
+g4.selectAll("path")
+  .data(myWinsNomsData)
+  .enter().append("path")
+  .attr("class", "point")
+  .attr("d", d3.symbol().type(d3.symbolCross).size(30/*function(d){
+                    return rscale(d);
+                  }*/))
+  .attr("transform", function(d,i) { return "translate("+x(myRatingData[i]) +  "," + y(myWinsNomsData[i])+")" ; })
+  .style("fill", "none")
+  .style("stroke", "blue")
+  .style("stroke-width", "1.0px") 
+  ;
+
+g5.selectAll("path")
+  .data(myWinsNomsData)
+  .enter().append("path")
+  .attr("class", "point")
+  .attr("d", d3.symbol().type(d3.symbolCross).size(30/*function(d){
+                    return rscale(d);
+                  }*/))
+  .attr("transform", function(d,i) { return "translate("+x(myRatingData[i]) +  "," + y(myWinsNomsData[i])+")" ; })
+  .style("fill", "none")
+  .style("stroke", "blue")
+  .style("stroke-width", "1.0px") 
+  ;
+// text label for the y axis
+ g.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (height-height))
+      .attr("x",-margin.left )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Wins+Noms");   
+g2.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (height-height))
+      .attr("x",-margin.left )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Budget");     
+
+g3.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (height-height))
+      .attr("x",-margin.left )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Votes");    
+
+g4.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (height-height))
+      .attr("x",-margin.left )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Wins+Noms");    
+
+g5.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", (height-height))
+      .attr("x",-margin.left )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Wins+Noms");    
+
+// text label for the x axis
+g.append("text")      // text label for the x axis
+        .attr("x", width+margin.right-20 )
+        .attr("y", height-20 )
+        .style("text-anchor", "middle")
+        .text("Rating");
+
+g2.append("text")      // text label for the x axis
+        .attr("x", width+margin.right-20 )
+        .attr("y", height-20 )
+        .style("text-anchor", "middle")
+        .text("Rating");
+
+g3.append("text")      // text label for the x axis
+        .attr("x", width+margin.right-20 )
+        .attr("y", height-20 )
+        .style("text-anchor", "middle")
+        .text("Rating");
+g4.append("text")      // text label for the x axis
+        .attr("x", width+margin.right-20 )
+        .attr("y", height-20 )
+        .style("text-anchor", "middle")
+        .text("Rating");
+
+g5.append("text")      // text label for the x axis
+        .attr("x", width+margin.right-20 )
+        .attr("y", height-20 )
+        .style("text-anchor", "middle")
+        .text("Rating");
+
+g.selectAll('circle').select((d,i,g)=> {return myIsGoodRatingData[i] == 1?g[i]:null}).remove(); 
+g.selectAll('path').select((d,i,g)=> {return myIsGoodRatingData[i] == 0?g[i]:null}).remove(); 
+
+g2.selectAll('circle').select((d,i,g)=> {return myIsGoodRatingData[i] == 1?g[i]:null}).remove(); 
+g2.selectAll('path').select((d,i,g)=> {return myIsGoodRatingData[i] == 0?g[i]:null}).remove(); 
+
+g3.selectAll('circle').select((d,i,g)=> {return myIsGoodRatingData[i] == 1?g[i]:null}).remove(); 
+g3.selectAll('path').select((d,i,g)=> {return myIsGoodRatingData[i] == 0?g[i]:null}).remove(); 
+// draw legend
+var legend = g.selectAll("g")
+      .data(["BadRating","GoodRating"])
+      .enter().append("g")
+      .attr("class", "legend");
+
+    legend.append("circle")
+          .attr("cx", 857)
+          .attr("cy", 21)
+          .attr("r",3)
+          .style("stroke", "red")                   
+          .style("stroke-width", 1)
+          .style("fill", "none") 
+          ;
+    legend.append("path")
+          .attr("class", "point")
+          .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+          .attr("transform", function(d,i) { return "translate("+(width-18)+  "," + 38+")" ; })
+          .style("fill", "none")
+          .style("stroke", "blue")
+          .style("stroke-width", "1.0px") 
+  ;
+
+
+// draw legend text
+    legend.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 21)
+          .attr("dy", ".35em")
+          //.style("text-anchor", "end")
+          .text("bad rating")
+          ;
+    legend.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 38)
+          .attr("dy", ".35em")
+          //.style("text-anchor", "end")
+          .text("good rating")
+          ;
+
+
+// draw legend
+var legend2 = g2.selectAll("g")
+      .data(["BadRating","GoodRating"])
+      .enter().append("g")
+      .attr("class", "legend");
+
+    legend2.append("circle")
+          .attr("cx", 857)
+          .attr("cy", 21)
+          .attr("r",3)
+          .style("stroke", "red")                   
+          .style("stroke-width", 1)
+          .style("fill", "none") 
+          ;
+    legend2.append("path")
+          .attr("class", "point")
+          .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+          .attr("transform", function(d,i) { return "translate("+(width-18)+  "," + (38)+")" ; })
+          .style("fill", "none")
+          .style("stroke", "blue")
+          .style("stroke-width", "1.0px") 
+  ;
+
+
+// draw legend text
+    legend2.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 21)
+          .attr("dy", ".35em")
+          .text("bad rating")
+          ;
+    legend2.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 38)
+          .attr("dy", ".35em")
+          .text("good rating")
+          ;
+
+
+var legend3 = g3.selectAll("g")
+      .data(["BadRating","GoodRating"])
+      .enter().append("g")
+      .attr("class", "legend");
+
+    legend3.append("circle")
+          .attr("cx", 857)
+          .attr("cy", 21)
+          .attr("r",3)
+          .style("stroke", "red")                   
+          .style("stroke-width", 1)
+          .style("fill", "none") 
+          ;
+    legend3.append("path")
+          .attr("class", "point")
+          .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+          .attr("transform", function(d,i) { return "translate("+(width-18)+  "," + (38)+")" ; })
+          .style("fill", "none")
+          .style("stroke", "blue")
+          .style("stroke-width", "1.0px") 
+  ;
+
+
+// draw legend text
+    legend3.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 21)
+          .attr("dy", ".35em")
+          .text("bad rating")
+          ;
+    legend3.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 38)
+          .attr("dy", ".35em")
+          .text("good rating")
+          ;
+
+
+var legend4 = g4.selectAll("g")
+      .data(["BadRating","GoodRating"])
+      .enter().append("g")
+      .attr("class", "legend");
+
+    legend4.append("circle")
+          .attr("cx", 857)
+          .attr("cy", 21)
+          .attr("r",3)
+          .style("stroke", "red")                   
+          .style("stroke-width", 1)
+          .style("fill", "none") 
+          ;
+    legend4.append("path")
+          .attr("class", "point")
+          .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+          .attr("transform", function(d,i) { return "translate("+(width-18)+  "," + (38)+")" ; })
+          .style("fill", "none")
+          .style("stroke", "blue")
+          .style("stroke-width", "1.0px") 
+  ;
+
+
+// draw legend text
+    legend4.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 21)
+          .attr("dy", ".35em")
+          .text("bad rating")
+          ;
+    legend4.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 38)
+          .attr("dy", ".35em")
+          .text("good rating")
+          ;
+
+var legend5 = g5.selectAll("g")
+      .data(["BadRating","GoodRating"])
+      .enter().append("g")
+      .attr("class", "legend");
+
+    legend5.append("circle")
+          .attr("cx", 857)
+          .attr("cy", 21)
+          .attr("r",3)
+          .style("stroke", "red")                   
+          .style("stroke-width", 1)
+          .style("fill", "none") 
+          ;
+    legend5.append("path")
+          .attr("class", "point")
+          .attr("d", d3.symbol().type(d3.symbolCross).size(30))
+          .attr("transform", function(d,i) { return "translate("+(width-18)+  "," + (38)+")" ; })
+          .style("fill", "none")
+          .style("stroke", "blue")
+          .style("stroke-width", "1.0px") 
+  ;
+
+
+// draw legend text
+    legend5.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 21)
+          .attr("dy", ".35em")
+          .text("bad rating")
+          ;
+    legend5.append("text")
+          .style("font", "14px open-sans")
+          .attr("x", width - 8)
+          .attr("y", 38)
+          .attr("dy", ".35em")
+          .text("good rating")
+          ;
+
+
+   g.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 10 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Wins+Nominations vs. Rating");
+
+   g2.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 10 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Budget vs. Rating");
+
+  g3.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 10 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Votes vs. Rating sized by Wins+Nominations");
+
+  g4.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 10 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Wins+Nominations (square-root-scaled) vs. Rating");
+
+  g5.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 10 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Wins+Nominations (log-scaled) vs. Rating");
+});
+
+
+	</script>
+
+</body>
